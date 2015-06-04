@@ -7,21 +7,43 @@
 package com.uguurozkan.smsrules;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 
 public class SmsRules extends ActionBarActivity {
+    SmsDetailsDBHelper detailsDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sms_rules);
+
+
         Intent intent = new Intent(this, ListAllSmsActivity.class);
         startActivity(intent);
+        populateDB();
     }
+
+    private void populateDB() {
+        detailsDB = new SmsDetailsDBHelper(this);
+        Cursor cursor = getContentResolver().query(Uri.parse("content://sms/inbox"), null, null, null, null);
+
+        cursor.moveToFirst();
+        while (cursor.moveToNext()) {
+            String sender = cursor.getString(cursor.getColumnIndex(SmsDetailsDBHelper.SMS_DETAILS_COLUMN_ADDRESS)).toString();
+            String body = cursor.getString(cursor.getColumnIndex(SmsDetailsDBHelper.SMS_DETAILS_COLUMN_BODY)).toString();
+            String date = cursor.getString(cursor.getColumnIndex(SmsDetailsDBHelper.SMS_DETAILS_COLUMN_DATE)).toString();
+            String status = cursor.getString(cursor.getColumnIndex(SmsDetailsDBHelper.SMS_DETAILS_COLUMN_READ)).toString();
+            detailsDB.insertEntry("Uncategorized", sender, body, date, status);
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

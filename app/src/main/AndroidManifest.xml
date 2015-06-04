@@ -3,7 +3,7 @@
   ~ Copyright (c) 2015.
   ~ This code belongs to Uğur Özkan
   ~ ugur.ozkan@ozu.edu.tr
--->
+  -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.uguurozkan.smsrules" >
 

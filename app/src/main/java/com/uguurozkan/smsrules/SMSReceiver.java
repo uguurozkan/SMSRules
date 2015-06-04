@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2015.
- * This code belongs to U?ur Özkan
+ * This code belongs to U?ur ï¿½zkan
  * ugur.ozkan@ozu.edu.tr
  */
 
@@ -16,7 +16,7 @@ import android.provider.ContactsContract;
 import android.telephony.SmsMessage;
 
 /**
- * Created by U?ur Özkan on 6/4/2015.
+ * Created by UÄŸur Ã–zkan on 6/4/2015.
  */
 public class SMSReceiver extends BroadcastReceiver {
 
@@ -24,7 +24,12 @@ public class SMSReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String address = getSenderName(context, intent.getExtras());
         String messageBody = getMessageBody(intent.getExtras());
+        filter(address, messageBody);
         //abortBroadcast();
+    }
+
+    private void filter(String address, String messageBody) {
+
     }
 
     private String getSenderName(Context context, Bundle intentExtras) {
