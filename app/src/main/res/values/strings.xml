@@ -1,0 +1,13 @@
+<!--
+  ~ Copyright (c) 2015.
+  ~ This code belongs to Uğur Özkan
+  ~ ugur.ozkan@ozu.edu.tr
+  -->
+
+<resources>
+    <string name="app_name">SMS Rules</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_list_all_sms">ListAllSmsActivity</string>
+</resources>
