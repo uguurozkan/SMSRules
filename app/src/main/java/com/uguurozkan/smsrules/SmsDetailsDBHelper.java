@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 /**
  * Created by Uğur Özkan on 6/4/2015.
@@ -19,7 +20,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class SmsDetailsDBHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME                = "SmsDetailsAndRules.db";
-    public static final String SMS_DETAILS_TABLE_NAME       = "SmsDetailsDB";
+    public static final String SMS_DETAILS_TABLE_NAME       = "SmsDetailsTable";
     public static final String SMS_DETAILS_COLUMN_ID        = "id";
     public static final String SMS_DETAILS_COLUMN_GROUP     = "ruleGroup";
     public static final String SMS_DETAILS_COLUMN_ADDRESS   = "address";
@@ -37,15 +38,22 @@ public class SmsDetailsDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE "
-                        + SMS_DETAILS_TABLE_NAME     + " ("
-                        + SMS_DETAILS_COLUMN_ID      + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                        + SMS_DETAILS_COLUMN_GROUP   + " TEXT, "
+        Log.d("MSMSM", "SMSMDeteeaill");
+        db.execSQL("CREATE TABLE IF NOT EXISTS "
+                        + SMS_DETAILS_TABLE_NAME + " ("
+                        + SMS_DETAILS_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                        + SMS_DETAILS_COLUMN_GROUP + " TEXT, "
                         + SMS_DETAILS_COLUMN_ADDRESS + " TEXT, "
-                        + SMS_DETAILS_COLUMN_BODY    + " TEXT, "
-                        + SMS_DETAILS_COLUMN_DATE    + " TEXT, "
-                        + SMS_DETAILS_COLUMN_READ    + " TEXT)"
+                        + SMS_DETAILS_COLUMN_BODY + " TEXT, "
+                        + SMS_DETAILS_COLUMN_DATE + " TEXT, "
+                        + SMS_DETAILS_COLUMN_READ + " TEXT)"
         );
+    }
+
+    @Override
+    public void onOpen(SQLiteDatabase db) {
+        super.onOpen(db);
+        this.onCreate(db);
     }
 
     @Override
@@ -80,7 +88,8 @@ public class SmsDetailsDBHelper extends SQLiteOpenHelper {
 
     public Integer deleteEntry(Integer id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete(SMS_DETAILS_TABLE_NAME, SMS_DETAILS_COLUMN_ID + "=", new String[]{Integer.toString(id)});
+        Integer res = db.delete(SMS_DETAILS_TABLE_NAME, SMS_DETAILS_COLUMN_ID + "=", new String[]{Integer.toString(id)});
+        return res;
     }
 
     public Cursor getDataById(int id) {

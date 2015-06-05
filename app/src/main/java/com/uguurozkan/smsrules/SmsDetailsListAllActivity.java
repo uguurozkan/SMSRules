@@ -24,20 +24,27 @@ public class SmsDetailsListAllActivity extends Activity implements AdapterView.O
 
     private SmsDetailsDBHelper detailsDB;
     private ListView listViewSMS;
-    private Cursor cursor;
     private SmsDetailsListAdapter smsDetailsListAdapter;
 
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_all_sms);
 
         String groupName = getIntent().getStringExtra("groupName");
-        detailsDB = new SmsDetailsDBHelper(this);
+        detailsDB = getSmsDetailsDB();
 
         smsDetailsListAdapter = new SmsDetailsListAdapter(this, detailsDB.getDataBy(SmsDetailsDBHelper.SMS_DETAILS_COLUMN_GROUP, groupName));
         listViewSMS = (ListView) findViewById(R.id.listViewSMS);
         listViewSMS.setAdapter(smsDetailsListAdapter);
         listViewSMS.setOnItemClickListener(this);
+    }
+
+    private SmsDetailsDBHelper getSmsDetailsDB() {
+        if (detailsDB == null) {
+            detailsDB = new SmsDetailsDBHelper(this);
+        }
+        return detailsDB;
     }
 
     @Override

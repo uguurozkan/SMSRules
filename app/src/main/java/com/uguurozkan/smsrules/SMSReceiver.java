@@ -39,7 +39,7 @@ public class SMSReceiver extends BroadcastReceiver {
 
     private void filter(String address, String messageBody) {
         Cursor cursorFrom = rulesDB.getDataBy(GroupsDBHelper.SMS_RULES_COLUMN_FROM, address);
-        Cursor cursorValues = rulesDB.getValuesColumn();
+        Cursor cursorValues = rulesDB.getColumn(GroupsDBHelper.SMS_RULES_COLUMN_VALUE);
 
         if (cursorFrom != null && cursorFrom.moveToFirst()) {
             do {

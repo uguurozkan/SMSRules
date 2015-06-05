@@ -38,8 +38,8 @@ public class GroupsListAllActivity extends ActionBarActivity implements AdapterV
         detailsDB = getSmsDetailsDB();
 
 
-        populateSMSRulesDB();
-        populateSMSDetailsDB();
+        //populateSMSRulesDB();
+        //populateSMSDetailsDB();
 
         groupsListAdapter = new GroupsListAdapter(this, rulesDB.getRuleGroupsCursor());
         listViewGroups = (ListView) findViewById(R.id.listViewGroups);
@@ -62,12 +62,13 @@ public class GroupsListAllActivity extends ActionBarActivity implements AdapterV
     }
 
     private void populateSMSRulesDB() {
-        rulesDB.insertEntry("SPAM", "indirim", null);
-        rulesDB.insertEntry("SPAM", "kredi", null);
-        rulesDB.insertEntry("BANK", null, "AKBANK");
-        rulesDB.insertEntry("Uncategorized", null, null);
-        rulesDB.insertEntry("TEST", null, "+905348134686");
-        rulesDB.insertEntry("TEST", null, "Uğur Özkan");
+        rulesDB.insertEntry("SPAM", "indirim", null, null);
+        rulesDB.insertEntry("SPAM", "kredi", null, null);
+        rulesDB.insertEntry("BANK", null, "AKBANK", null);
+        rulesDB.insertEntry("Uncategorized", null, null, null);
+        rulesDB.insertEntry("TEST", "What!?", "Uğur Özkan", "Hmm.");
+        rulesDB.insertEntry(null, "Thx.", "Uğur Özkan", "yw");
+        rulesDB.insertEntry("TEST", null, "Uğur Özkan", null);
     }
 
     private void populateSMSDetailsDB() {
@@ -95,11 +96,16 @@ public class GroupsListAllActivity extends ActionBarActivity implements AdapterV
     @Override
     protected void onResume() {
         super.onResume();
+        groupsListAdapter.notifyDataSetChanged();
+        listViewGroups.invalidateViews();
+        listViewGroups.refreshDrawableState();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        detailsDB.close();
+        rulesDB.close();
     }
 
     @Override

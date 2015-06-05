@@ -32,8 +32,9 @@ public class GroupsAddActivity extends Activity {
         String value = ((EditText) findViewById(R.id.editTextValue)).getText().toString();
         String groupName = ((EditText) findViewById(R.id.editTextGroupName)).getText().toString();
         String from = ((EditText) findViewById(R.id.editTextFrom)).getText().toString();
+        String replyMessage = ((EditText) findViewById(R.id.editTextReply)).getText().toString();
 
-        rulesDB.insertEntry(groupName, value, from);
+        rulesDB.insertEntry(groupName, value, from, replyMessage);
         finish();
     }
 
