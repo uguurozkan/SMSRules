@@ -28,7 +28,7 @@ public class SmsDetailsDBHelper extends SQLiteOpenHelper {
     public static final String SMS_DETAILS_COLUMN_READ      = "read";
 
     public SmsDetailsDBHelper(Context context) {
-        this(context, DATABASE_NAME, null, 2);
+        this(context, DATABASE_NAME, null, 1);
     }
 
     public SmsDetailsDBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
