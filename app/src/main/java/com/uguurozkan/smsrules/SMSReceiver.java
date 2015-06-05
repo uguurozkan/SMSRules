@@ -39,15 +39,14 @@ public class SMSReceiver extends BroadcastReceiver {
 
     private void filter(String address, String messageBody) {
         Cursor cursorFrom = rulesDB.getDataBy(GroupsDBHelper.SMS_RULES_COLUMN_FROM, address);
+        Cursor cursorValues = rulesDB.getValuesColumn();
+
         if (cursorFrom != null && cursorFrom.moveToFirst()) {
             do {
                 String group = cursorFrom.getString(cursorFrom.getColumnIndex(GroupsDBHelper.SMS_RULES_COLUMN_GROUP));
                 detailsDB.insertEntry(group, address, messageBody, c.get(Calendar.SECOND) + "", false + "");
             } while (cursorFrom.moveToNext());
-        }
-
-        Cursor cursorValues = rulesDB.getValuesColumn();
-        if (cursorValues != null && cursorValues.moveToFirst()) {
+        } else if (cursorValues != null && cursorValues.moveToFirst()) {
             do {
                 String value = cursorValues.getString(cursorValues.getColumnIndex(GroupsDBHelper.SMS_RULES_COLUMN_VALUE));
                 String group = cursorFrom.getString(cursorFrom.getColumnIndex(GroupsDBHelper.SMS_RULES_COLUMN_GROUP));
@@ -55,8 +54,9 @@ public class SMSReceiver extends BroadcastReceiver {
                     detailsDB.insertEntry(group, address, messageBody, c.get(Calendar.SECOND) + "", false + "");
                 }
             } while(cursorValues.moveToNext());
+        } else {
+            detailsDB.insertEntry("Uncategorized", address, messageBody, c.get(Calendar.SECOND) + "", false + "");
         }
-
     }
 
     private String getSenderName(Context context, Bundle intentExtras) {

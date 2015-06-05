@@ -6,39 +6,35 @@
 
 package com.uguurozkan.smsrules;
 
+import android.app.Activity;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 
 
-public class GroupsAddActivity extends ActionBarActivity {
+public class GroupsAddActivity extends Activity {
+
+    GroupsDBHelper rulesDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_groups_add);
+        rulesDB = new GroupsDBHelper(this);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_add_group, menu);
-        return true;
+    public void addFilter(View view) {
+        String value = ((EditText) findViewById(R.id.editTextValue)).getText().toString();
+        String groupName = ((EditText) findViewById(R.id.editTextGroupName)).getText().toString();
+        String from = ((EditText) findViewById(R.id.editTextFrom)).getText().toString();
+
+        rulesDB.insertEntry(groupName, value, from);
+        finish();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 }
