@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2015.
- * This code belongs to U?ur �zkan
+ * This code belongs to Uğur Özkan
  * ugur.ozkan@ozu.edu.tr
  */
 
@@ -8,34 +8,35 @@ package com.uguurozkan.smsrules;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+/**
+ * Created by Uğur Özkan on 6/4/2015.
+ */
+public class SmsDetailsListAllActivity extends Activity implements AdapterView.OnItemClickListener{
 
-public class ListAllSmsActivity extends Activity implements AdapterView.OnItemClickListener{
-
+    private SmsDetailsDBHelper detailsDB;
     private ListView listViewSMS;
     private Cursor cursor;
-    private SMSListAdapter smsListAdapter;
+    private SmsDetailsListAdapter smsDetailsListAdapter;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_all_sms);
+
+        String groupName = getIntent().getStringExtra("groupName");
+        detailsDB = new SmsDetailsDBHelper(this);
+
+        smsDetailsListAdapter = new SmsDetailsListAdapter(this, detailsDB.getDataBy(SmsDetailsDBHelper.SMS_DETAILS_COLUMN_GROUP, groupName));
         listViewSMS = (ListView) findViewById(R.id.listViewSMS);
-        cursor = getContentResolver().query(Uri.parse("content://sms/inbox"), null, null, null, null);
-        smsListAdapter = new SMSListAdapter(this, cursor);
-        listViewSMS.setAdapter(smsListAdapter);
+        listViewSMS.setAdapter(smsDetailsListAdapter);
         listViewSMS.setOnItemClickListener(this);
     }
 

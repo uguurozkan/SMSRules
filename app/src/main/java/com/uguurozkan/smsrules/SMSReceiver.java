@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2015.
- * This code belongs to U?ur �zkan
+ * This code belongs to Uğur Özkan
  * ugur.ozkan@ozu.edu.tr
  */
 
@@ -20,15 +20,23 @@ import android.telephony.SmsMessage;
  */
 public class SMSReceiver extends BroadcastReceiver {
 
+    GroupsDBHelper rulesDB;
+    SmsDetailsDBHelper detailsDB;
+
     @Override
     public void onReceive(Context context, Intent intent) {
         String address = getSenderName(context, intent.getExtras());
         String messageBody = getMessageBody(intent.getExtras());
         filter(address, messageBody);
+        rulesDB = new GroupsDBHelper(context);
+        detailsDB = new SmsDetailsDBHelper(context);
         //abortBroadcast();
     }
 
     private void filter(String address, String messageBody) {
+        Cursor cursorBody = rulesDB.getDataBy(GroupsDBHelper.SMS_RULES_COLUMN_VALUE, messageBody);
+        Cursor cursorFrom = rulesDB.getDataBy(GroupsDBHelper.SMS_RULES_COLUMN_FROM, address);
+
 
     }
 

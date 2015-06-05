@@ -6,13 +6,17 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.uguurozkan.smsrules.SmsDetailsListAllActivity"
+    tools:context="com.uguurozkan.smsrules.GroupsListAllActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin">
 
     <ListView
-        android:id="@+id/listViewSMS"
+        android:id="@+id/listViewGroups"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:divider="#A0A0A0"
@@ -20,5 +24,5 @@
 
     </ListView>
 
-</LinearLayout>
 
+</LinearLayout>

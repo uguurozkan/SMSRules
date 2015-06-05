@@ -13,28 +13,29 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * Created by Uğur Özkan on 6/4/2015.
  */
-public class SmsRulesDBHelper extends SQLiteOpenHelper {
+public class GroupsDBHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME             = "SmsDetailsAndRules.db";
     public static final String SMS_RULES_TABLE_NAME      = "SmsRules";
     public static final String SMS_RULES_COLUMN_ID       = "id";
-    public static final String SMS_RULES_COLUMN_GROUP    = "group";
-    public static final String SMS_RULES_COLUMN_FILTER   = "filter"; //contains
+    public static final String SMS_RULES_COLUMN_GROUP    = "ruleGroup";
     public static final String SMS_RULES_COLUMN_VALUE    = "value";
-    public static final String SMS_RULES_COLUMN_FROM     = "from"; //from
-    private HashMap hp;
+    public static final String SMS_RULES_COLUMN_FROM     = "fromWhom"; //from
+    private ArrayList<String> ruleGroups;
 
-    public SmsRulesDBHelper(Context context) {
+    public GroupsDBHelper(Context context) {
         this(context, DATABASE_NAME, null, 1);
     }
 
-    public SmsRulesDBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+    public GroupsDBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
+        ruleGroups = new ArrayList<>();
     }
 
     @Override
@@ -43,7 +44,6 @@ public class SmsRulesDBHelper extends SQLiteOpenHelper {
                         + SMS_RULES_TABLE_NAME      + " ( "
                         + SMS_RULES_COLUMN_ID       + " INTEGER PRIMARY KEY, "
                         + SMS_RULES_COLUMN_GROUP    + " TEXT, "
-                        + SMS_RULES_COLUMN_FILTER   + " TEXT, "
                         + SMS_RULES_COLUMN_VALUE    + " TEXT, "
                         + SMS_RULES_COLUMN_FROM     + " TEXT )"
         );
@@ -55,24 +55,23 @@ public class SmsRulesDBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean insertEntry(String group, String filter, String value, String from) {
+    public boolean insertEntry(String group, String value, String from) {
         SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = populateContentValues(group, filter, value, from);
+        ContentValues contentValues = populateContentValues(group, value, from);
         db.insert(SMS_RULES_TABLE_NAME, null, contentValues);
         return true;
     }
 
-    public boolean updateEntry(Integer id, String group, String filter, String value, String from) {
+    public boolean updateEntry(Integer id, String group, String value, String from) {
         SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = populateContentValues(group, filter, value, from);
+        ContentValues contentValues = populateContentValues(group, value, from);
         db.update(SMS_RULES_TABLE_NAME, contentValues, SMS_RULES_COLUMN_ID + "=", new String[]{Integer.toString(id)});
         return true;
     }
 
-    private ContentValues populateContentValues(String group, String filter, String value, String from) {
+    private ContentValues populateContentValues(String ruleGroup, String value, String from) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(SMS_RULES_COLUMN_GROUP, group);
-        contentValues.put(SMS_RULES_COLUMN_FILTER, filter);
+        contentValues.put(SMS_RULES_COLUMN_GROUP, ruleGroup);
         contentValues.put(SMS_RULES_COLUMN_VALUE, value);
         contentValues.put(SMS_RULES_COLUMN_FROM, from);
         return contentValues;
@@ -95,7 +94,7 @@ public class SmsRulesDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT *" +
                 " FROM " + SMS_RULES_TABLE_NAME +
-                " WHERE " + columnName + "=" + value, null);
+                " WHERE CONTAINS(" + columnName + ", '" + value + "')", null);
         return cursor;
     }
 
@@ -103,5 +102,25 @@ public class SmsRulesDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         int numRows = (int) DatabaseUtils.queryNumEntries(db, SMS_RULES_TABLE_NAME);
         return numRows;
+    }
+
+    public ArrayList<String> getRuleGroups() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT DISTINCT " + SMS_RULES_COLUMN_GROUP +
+                " FROM " + SMS_RULES_TABLE_NAME, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                ruleGroups.add(cursor.getString(cursor.getColumnIndex(SMS_RULES_COLUMN_GROUP)));
+            } while (cursor.moveToNext());
+        }
+        return ruleGroups;
+    }
+
+    public Cursor getRuleGroupsCursor() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT DISTINCT " + SMS_RULES_COLUMN_GROUP +
+                " FROM " + SMS_RULES_TABLE_NAME, null);
+        return cursor;
     }
 }

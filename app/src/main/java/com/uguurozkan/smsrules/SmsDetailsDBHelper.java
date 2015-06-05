@@ -13,8 +13,6 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import java.util.HashMap;
-
 /**
  * Created by Uğur Özkan on 6/4/2015.
  */
@@ -28,7 +26,6 @@ public class SmsDetailsDBHelper extends SQLiteOpenHelper {
     public static final String SMS_DETAILS_COLUMN_BODY      = "body";
     public static final String SMS_DETAILS_COLUMN_DATE      = "date";
     public static final String SMS_DETAILS_COLUMN_READ      = "read";
-    private HashMap hp;
 
     public SmsDetailsDBHelper(Context context) {
         this(context, DATABASE_NAME, null, 2);
@@ -98,7 +95,7 @@ public class SmsDetailsDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT *" +
                 " FROM " + SMS_DETAILS_TABLE_NAME +
-                " WHERE " + columnName + "=" + value, null);
+                " WHERE " + columnName + "='" + value + "'", null);
         return cursor;
     }
 
