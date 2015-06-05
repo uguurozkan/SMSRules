@@ -34,8 +34,8 @@ public class GroupsListAllActivity extends ActionBarActivity implements AdapterV
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_all_groups);
 
-        rulesDB = new GroupsDBHelper(this);
-        detailsDB = new SmsDetailsDBHelper(this);
+        rulesDB = getGroupsDB();
+        detailsDB = getSmsDetailsDB();
 
 
         populateSMSRulesDB();
@@ -45,8 +45,20 @@ public class GroupsListAllActivity extends ActionBarActivity implements AdapterV
         listViewGroups = (ListView) findViewById(R.id.listViewGroups);
         listViewGroups.setAdapter(groupsListAdapter);
         listViewGroups.setOnItemClickListener(this);
+    }
 
-        //this.deleteDatabase(SmsDetailsDBHelper.DATABASE_NAME);
+    private GroupsDBHelper getGroupsDB() {
+        if (rulesDB == null) {
+            rulesDB = new GroupsDBHelper(this);
+        }
+        return rulesDB;
+    }
+
+    private SmsDetailsDBHelper getSmsDetailsDB() {
+        if (detailsDB == null) {
+            detailsDB = new SmsDetailsDBHelper(this);
+        }
+        return detailsDB;
     }
 
     private void populateSMSRulesDB() {
@@ -54,6 +66,8 @@ public class GroupsListAllActivity extends ActionBarActivity implements AdapterV
         rulesDB.insertEntry("SPAM", "kredi", null);
         rulesDB.insertEntry("BANK", null, "AKBANK");
         rulesDB.insertEntry("Uncategorized", null, null);
+        rulesDB.insertEntry("TEST", null, "+905348134686");
+        rulesDB.insertEntry("TEST", null, "Uğur Özkan");
     }
 
     private void populateSMSDetailsDB() {
@@ -71,6 +85,21 @@ public class GroupsListAllActivity extends ActionBarActivity implements AdapterV
             }
             while (cursor.moveToNext() && i<40);
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     @Override

@@ -26,7 +26,7 @@ public class GroupsDBHelper extends SQLiteOpenHelper {
     public static final String SMS_RULES_COLUMN_ID       = "id";
     public static final String SMS_RULES_COLUMN_GROUP    = "ruleGroup";
     public static final String SMS_RULES_COLUMN_VALUE    = "value";
-    public static final String SMS_RULES_COLUMN_FROM     = "fromWhom"; //from
+    public static final String SMS_RULES_COLUMN_FROM     = "fromWhom";
     private ArrayList<String> ruleGroups;
 
     public GroupsDBHelper(Context context) {
@@ -59,6 +59,7 @@ public class GroupsDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = populateContentValues(group, value, from);
         db.insert(SMS_RULES_TABLE_NAME, null, contentValues);
+        db.close();
         return true;
     }
 
@@ -66,6 +67,7 @@ public class GroupsDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = populateContentValues(group, value, from);
         db.update(SMS_RULES_TABLE_NAME, contentValues, SMS_RULES_COLUMN_ID + "=", new String[]{Integer.toString(id)});
+        db.close();
         return true;
     }
 
@@ -94,7 +96,7 @@ public class GroupsDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT *" +
                 " FROM " + SMS_RULES_TABLE_NAME +
-                " WHERE CONTAINS(" + columnName + ", '" + value + "')", null);
+                " WHERE " + columnName + "='" + value + "'", null);
         return cursor;
     }
 
@@ -120,6 +122,13 @@ public class GroupsDBHelper extends SQLiteOpenHelper {
     public Cursor getRuleGroupsCursor() {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT DISTINCT " + SMS_RULES_COLUMN_GROUP +
+                " FROM " + SMS_RULES_TABLE_NAME, null);
+        return cursor;
+    }
+
+    public Cursor getValuesColumn() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT DISTINCT " + SMS_RULES_COLUMN_VALUE +
                 " FROM " + SMS_RULES_TABLE_NAME, null);
         return cursor;
     }

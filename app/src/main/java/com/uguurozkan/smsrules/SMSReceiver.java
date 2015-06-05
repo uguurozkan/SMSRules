@@ -15,6 +15,8 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.telephony.SmsMessage;
 
+import java.util.Calendar;
+
 /**
  * Created by Uğur Özkan on 6/4/2015.
  */
@@ -22,21 +24,38 @@ public class SMSReceiver extends BroadcastReceiver {
 
     GroupsDBHelper rulesDB;
     SmsDetailsDBHelper detailsDB;
+    Calendar c = Calendar.getInstance();
 
     @Override
     public void onReceive(Context context, Intent intent) {
         String address = getSenderName(context, intent.getExtras());
         String messageBody = getMessageBody(intent.getExtras());
-        filter(address, messageBody);
+
         rulesDB = new GroupsDBHelper(context);
         detailsDB = new SmsDetailsDBHelper(context);
+        filter(address, messageBody);
         //abortBroadcast();
     }
 
     private void filter(String address, String messageBody) {
-        Cursor cursorBody = rulesDB.getDataBy(GroupsDBHelper.SMS_RULES_COLUMN_VALUE, messageBody);
         Cursor cursorFrom = rulesDB.getDataBy(GroupsDBHelper.SMS_RULES_COLUMN_FROM, address);
+        if (cursorFrom != null && cursorFrom.moveToFirst()) {
+            do {
+                String group = cursorFrom.getString(cursorFrom.getColumnIndex(GroupsDBHelper.SMS_RULES_COLUMN_GROUP));
+                detailsDB.insertEntry(group, address, messageBody, c.get(Calendar.SECOND) + "", false + "");
+            } while (cursorFrom.moveToNext());
+        }
 
+        Cursor cursorValues = rulesDB.getValuesColumn();
+        if (cursorValues != null && cursorValues.moveToFirst()) {
+            do {
+                String value = cursorValues.getString(cursorValues.getColumnIndex(GroupsDBHelper.SMS_RULES_COLUMN_VALUE));
+                String group = cursorFrom.getString(cursorFrom.getColumnIndex(GroupsDBHelper.SMS_RULES_COLUMN_GROUP));
+                if (messageBody.contains(value)) {
+                    detailsDB.insertEntry(group, address, messageBody, c.get(Calendar.SECOND) + "", false + "");
+                }
+            } while(cursorValues.moveToNext());
+        }
 
     }
 
