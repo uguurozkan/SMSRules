@@ -48,6 +48,7 @@ public class SMSReceiver extends BroadcastReceiver {
     private void filterSms(String address, String messageBody) {
         Cursor cursorAll = rulesDB.getAll();
 
+        boolean filtered = false;
         if (cursorAll != null && cursorAll.moveToFirst()) {
             do {
                 String group = cursorAll.getString(cursorAll.getColumnIndex(GroupsDBHelper.SMS_RULES_COLUMN_GROUP));
@@ -56,24 +57,25 @@ public class SMSReceiver extends BroadcastReceiver {
                 String reply = cursorAll.getString(cursorAll.getColumnIndex(GroupsDBHelper.SMS_RULES_COLUMN_REPLY));
 
                 if (address.equals(from) && !value.equals("") && messageBody.contains(value)) {
-                    filter(address, messageBody, group, reply);
-                } else if(address.equals(from)) {
-                    filter(address, messageBody, group, reply);
-                } else if (messageBody.contains(value)) {
-                    filter(address, messageBody, group, reply);
+                    filtered = filter(address, messageBody, group, reply);
+                } else if(address.equals(from) && value.equals("")) {
+                    filtered = filter(address, messageBody, group, reply);
+                } else if (messageBody.contains(value) && !value.equals("") && address.equals("")) {
+                    filtered = filter(address, messageBody, group, reply);
                 }
             } while (cursorAll.moveToNext());
-        } else {
+            cursorAll.close();
+        }
+
+        if (!filtered) {
             if (!rulesDB.getRuleGroups().contains("Uncategorized")) {
-                rulesDB.insertEntry("Uncategorized", null, null, null);
+                rulesDB.insertEntry("Uncategorized", "", "", "");
             }
             detailsDB.insertEntry("Uncategorized", address, messageBody, c.get(Calendar.SECOND) + "", false + "");
         }
-
-        cursorAll.close();
     }
 
-    private void filter(String address, String messageBody, String group, String reply) {
+    private boolean filter(String address, String messageBody, String group, String reply) {
         if (group != null && !group.equals("")) {
             detailsDB.insertEntry(group, address, messageBody, c.get(Calendar.SECOND) + "", false + "");
         }
@@ -88,6 +90,8 @@ public class SMSReceiver extends BroadcastReceiver {
                 Log.d("SMSM", "couldn't send\n" + e.getCause());
             }
         }
+
+        return true;
     }
 
     private void showMessageInHistory(String address, String message) {
