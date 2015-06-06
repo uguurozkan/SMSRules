@@ -113,4 +113,11 @@ public class SmsDetailsDBHelper extends SQLiteOpenHelper {
         return numRows;
     }
 
+    public void closeDb() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        if (db.isOpen()) {
+            db.close();
+        }
+    }
+
 }

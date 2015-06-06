@@ -6,6 +6,7 @@
 
 package com.uguurozkan.smsrules;
 
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -16,6 +17,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
+import android.util.Log;
 
 import java.util.Calendar;
 
@@ -26,16 +28,15 @@ public class SMSReceiver extends BroadcastReceiver {
 
     private GroupsDBHelper rulesDB;
     private SmsDetailsDBHelper detailsDB;
-    private Context context;
+    private Context ctxt;
     private Calendar c = Calendar.getInstance();
-
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        String address = getSenderName(context, intent.getExtras());
+        String address = getSenderNum(intent.getExtras());
         String messageBody = getMessageBody(intent.getExtras());
 
-        this.context = context;
+        this.ctxt = context;
         rulesDB = new GroupsDBHelper(context);
         detailsDB = new SmsDetailsDBHelper(context);
         filterSms(address, messageBody);
@@ -52,7 +53,7 @@ public class SMSReceiver extends BroadcastReceiver {
                 String from = cursorAll.getString(cursorAll.getColumnIndex(GroupsDBHelper.SMS_RULES_COLUMN_FROM));
                 String reply = cursorAll.getString(cursorAll.getColumnIndex(GroupsDBHelper.SMS_RULES_COLUMN_REPLY));
 
-                if (address.equals(from) && messageBody.contains(value)) {
+                if (address.equals(from) && !value.equals("") && messageBody.contains(value)) {
                     filter(address, messageBody, group, reply);
                 } else if(address.equals(from)) {
                     filter(address, messageBody, group, reply);
@@ -66,27 +67,28 @@ public class SMSReceiver extends BroadcastReceiver {
     }
 
     private void filter(String address, String messageBody, String group, String reply) {
-        if (group != null) {
+        if (group != null && !group.equals("")) {
             detailsDB.insertEntry(group, address, messageBody, c.get(Calendar.SECOND) + "", false + "");
         }
 
-        if (reply != null) {
-            sendMessage(address, reply);
+        if (reply != null && !reply.equals("")) {
+            Log.d("SMSM", "SMSReceiver filter");
+            try {
+                SmsManager sms = SmsManager.getDefault();
+                sms.sendTextMessage(address, null, reply, null, null);
+
+                showMessageInHistory(address, reply);
+            } catch (Exception e) {
+                Log.d("SMSM", "couldn't send\n" + e.getCause());
+            }
         }
-    }
-
-    private void sendMessage(String address, String reply) {
-        SmsManager sms = SmsManager.getDefault();
-        sms.sendTextMessage(address, null, reply, null, null);
-
-        showMessageInHistory(address, reply);
     }
 
     private void showMessageInHistory(String address, String message) {
         ContentValues values = new ContentValues();
         values.put("address", address);
         values.put("body", message);
-        context.getContentResolver().insert(Uri.parse("content://sms/sent"), values);
+        ctxt.getContentResolver().insert(Uri.parse("content://sms/sent"), values);
     }
 
     private String getSenderName(Context context, Bundle intentExtras) {
