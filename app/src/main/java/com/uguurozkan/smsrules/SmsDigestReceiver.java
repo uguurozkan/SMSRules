@@ -20,5 +20,6 @@ public class SmsDigestReceiver extends BroadcastReceiver {
         Intent scheduledIntent = new Intent(context, GroupsListAllActivity.class);
         scheduledIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(scheduledIntent);
+        SMSReceiver.isInSilent = false;
     }
 }

@@ -27,11 +27,12 @@ public class SmsDigestService extends Service {
             Intent intent = new Intent(this.getApplicationContext(), SmsDigestReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), 1253, intent, PendingIntent.FLAG_UPDATE_CURRENT |  Intent.FILL_IN_DATA);
             AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + interval, pendingIntent );
+            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + interval, pendingIntent);
 
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            SMSReceiver.isInSilent = true;
             stopSelf();
         }
     }

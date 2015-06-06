@@ -26,6 +26,7 @@ import java.util.Calendar;
  */
 public class SMSReceiver extends BroadcastReceiver {
 
+    public static boolean isInSilent = false;
     private GroupsDBHelper rulesDB;
     private SmsDetailsDBHelper detailsDB;
     private Context ctxt;
@@ -97,12 +98,14 @@ public class SMSReceiver extends BroadcastReceiver {
     }
 
     private void playNotificationSound() {
-        try {
-            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            Ringtone r = RingtoneManager.getRingtone(ctxt, notification);
-            r.play();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (!isInSilent) {
+            try {
+                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                Ringtone r = RingtoneManager.getRingtone(ctxt, notification);
+                r.play();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
