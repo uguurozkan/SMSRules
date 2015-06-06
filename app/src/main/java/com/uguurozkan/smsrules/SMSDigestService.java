@@ -3,7 +3,6 @@
  * This code belongs to Uğur Özkan
  * ugur.ozkan@ozu.edu.tr
  */
-
 package com.uguurozkan.smsrules;
 
 import android.app.AlarmManager;

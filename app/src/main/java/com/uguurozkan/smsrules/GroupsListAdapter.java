@@ -14,9 +14,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-/**
- * Created by Uğur Özkan on 6/5/2015.
- */
 public class GroupsListAdapter extends BaseAdapter {
 
     private Context context;
@@ -55,6 +52,10 @@ public class GroupsListAdapter extends BaseAdapter {
         TextView textViewGroupName = (TextView) convertView.findViewById(R.id.textViewGroupName);
 
         textViewGroupName.setText(groupName);
+
+        if (cursor.isLast()) {
+            cursor.close();
+        }
 
         return convertView;
     }

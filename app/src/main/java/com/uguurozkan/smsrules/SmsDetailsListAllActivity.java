@@ -9,17 +9,12 @@ package com.uguurozkan.smsrules;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-/**
- * Created by Uğur Özkan on 6/4/2015.
- */
 public class SmsDetailsListAllActivity extends Activity implements AdapterView.OnItemClickListener{
 
     private SmsDetailsDBHelper detailsDB;
@@ -65,7 +60,6 @@ public class SmsDetailsListAllActivity extends Activity implements AdapterView.O
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                return;
             }
         });
 

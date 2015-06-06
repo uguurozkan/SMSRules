@@ -12,13 +12,9 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import java.util.ArrayList;
 
-/**
- * Created by Uğur Özkan on 6/4/2015.
- */
 public class GroupsDBHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME             = "SmsDetailsAndRules.db";
@@ -29,6 +25,7 @@ public class GroupsDBHelper extends SQLiteOpenHelper {
     public static final String SMS_RULES_COLUMN_FROM     = "fromWhom";
     public static final String SMS_RULES_COLUMN_REPLY    = "reply";
 
+    private SQLiteDatabase db;
 
     public GroupsDBHelper(Context context) {
         this(context, DATABASE_NAME, null, 1);
@@ -64,15 +61,27 @@ public class GroupsDBHelper extends SQLiteOpenHelper {
 
     public boolean insertEntry(String group, String value, String from, String replyMessage) {
         this.close();
-        SQLiteDatabase db = this.getWritableDatabase();
+        db = getDatabase(true);
         ContentValues contentValues = populateContentValues(group, value, from, replyMessage);
         db.insert(SMS_RULES_TABLE_NAME, null, contentValues);
         return true;
     }
 
+    private SQLiteDatabase getDatabase(boolean isWritable) {
+        if (db != null && db.isOpen()) {
+            db.close();
+        }
+
+        if (isWritable) {
+            return this.getWritableDatabase();
+        } else {
+            return this.getReadableDatabase();
+        }
+    }
+
     public boolean updateEntry(Integer id, String group, String value, String from, String replyMessage) {
         this.close();
-        SQLiteDatabase db = this.getWritableDatabase();
+        db = getDatabase(true);
         ContentValues contentValues = populateContentValues(group, value, from, replyMessage);
         db.update(SMS_RULES_TABLE_NAME, contentValues, SMS_RULES_COLUMN_ID + "=", new String[]{Integer.toString(id)});
         return true;
@@ -89,39 +98,35 @@ public class GroupsDBHelper extends SQLiteOpenHelper {
 
     public Integer deleteEntry(Integer id) {
         this.close();
-        SQLiteDatabase db = this.getWritableDatabase();
-        Integer res = db.delete(SMS_RULES_TABLE_NAME, SMS_RULES_COLUMN_ID + "=", new String[]{Integer.toString(id)});
-        return res;
+        db = getDatabase(true);
+        return db.delete(SMS_RULES_TABLE_NAME, SMS_RULES_COLUMN_ID + "=", new String[]{Integer.toString(id)});
     }
 
     public Cursor getDataById(int id) {
         this.close();
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT *" +
+        db = getDatabase(false);
+        return db.rawQuery("SELECT *" +
                 " FROM " + SMS_RULES_TABLE_NAME +
                 " WHERE " + SMS_RULES_COLUMN_ID + "=" + id, null);
-        return cursor;
     }
 
     public Cursor getDataBy(String columnName, String value) {
         this.close();
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT *" +
+        db = getDatabase(false);
+        return db.rawQuery("SELECT *" +
                 " FROM " + SMS_RULES_TABLE_NAME +
                 " WHERE " + columnName + "='" + value + "'", null);
-        return cursor;
     }
 
     public int getNumberOfRows() {
         this.close();
-        SQLiteDatabase db = this.getReadableDatabase();
-        int numRows = (int) DatabaseUtils.queryNumEntries(db, SMS_RULES_TABLE_NAME);
-        return numRows;
+        db = getDatabase(false);
+        return (int) DatabaseUtils.queryNumEntries(db, SMS_RULES_TABLE_NAME);
     }
 
     public ArrayList<String> getRuleGroups() {
         this.close();
-        SQLiteDatabase db = this.getReadableDatabase();
+        db = getDatabase(false);
         Cursor cursor = db.rawQuery("SELECT DISTINCT " + SMS_RULES_COLUMN_GROUP +
                 " FROM " + SMS_RULES_TABLE_NAME, null);
 
@@ -130,32 +135,31 @@ public class GroupsDBHelper extends SQLiteOpenHelper {
             do {
                 ruleGroups.add(cursor.getString(cursor.getColumnIndex(SMS_RULES_COLUMN_GROUP)));
             } while (cursor.moveToNext());
+            cursor.close();
         }
+
         return ruleGroups;
     }
 
     public Cursor getRuleGroupsCursor() {
         this.close();
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT DISTINCT " + SMS_RULES_COLUMN_GROUP +
+        db = getDatabase(false);
+        return db.rawQuery("SELECT DISTINCT " + SMS_RULES_COLUMN_GROUP +
                 " FROM " + SMS_RULES_TABLE_NAME, null);
-        return cursor;
     }
 
     public Cursor getColumn(String columnName) {
         this.close();
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT DISTINCT " + columnName +
+        db = getDatabase(false);
+        return db.rawQuery("SELECT DISTINCT " + columnName +
                 " FROM " + SMS_RULES_TABLE_NAME, null);
-        return cursor;
     }
 
     public Cursor getAll() {
         this.close();
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT DISTINCT * " +
+        db = getDatabase(false);
+        return db.rawQuery("SELECT DISTINCT * " +
                 " FROM " + SMS_RULES_TABLE_NAME, null);
-        return cursor;
     }
 
 }

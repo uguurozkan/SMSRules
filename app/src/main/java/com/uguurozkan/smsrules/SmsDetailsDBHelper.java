@@ -12,11 +12,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
-/**
- * Created by Uğur Özkan on 6/4/2015.
- */
 public class SmsDetailsDBHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME                = "SmsDetailsAndRules.db";
@@ -27,6 +23,8 @@ public class SmsDetailsDBHelper extends SQLiteOpenHelper {
     public static final String SMS_DETAILS_COLUMN_BODY      = "body";
     public static final String SMS_DETAILS_COLUMN_DATE      = "date";
     public static final String SMS_DETAILS_COLUMN_READ      = "read";
+
+    private SQLiteDatabase db;
 
     public SmsDetailsDBHelper(Context context) {
         this(context, DATABASE_NAME, null, 1);
@@ -63,15 +61,29 @@ public class SmsDetailsDBHelper extends SQLiteOpenHelper {
 
     public boolean insertEntry(String group, String sender, String smsBody, String date, String status) {
         this.close();
-        SQLiteDatabase db = this.getWritableDatabase();
+        db = getDatabase(true);
         ContentValues contentValues = populateContentValues(group, sender, smsBody, date, status);
         db.insert(SMS_DETAILS_TABLE_NAME, null, contentValues);
         return true;
     }
 
+    private SQLiteDatabase getDatabase(boolean isWritable) {
+        if (db != null && db.isOpen()) {
+            db.close();
+        }
+
+        if (isWritable) {
+            db = this.getWritableDatabase();
+        } else {
+            db = this.getReadableDatabase();
+        }
+
+        return db;
+    }
+
     public boolean updateEntry(Integer id, String group, String sender, String smsBody, String date, String status) {
         this.close();
-        SQLiteDatabase db = this.getWritableDatabase();
+        db = getDatabase(true);
         ContentValues contentValues = populateContentValues(group, sender, smsBody, date, status);
         db.update(SMS_DETAILS_TABLE_NAME, contentValues, SMS_DETAILS_COLUMN_ID + "=", new String[]{Integer.toString(id)});
         return true;
@@ -89,34 +101,30 @@ public class SmsDetailsDBHelper extends SQLiteOpenHelper {
 
     public Integer deleteEntry(Integer id) {
         this.close();
-        SQLiteDatabase db = this.getWritableDatabase();
-        Integer res = db.delete(SMS_DETAILS_TABLE_NAME, SMS_DETAILS_COLUMN_ID + "=", new String[]{Integer.toString(id)});
-        return res;
+        db = getDatabase(true);
+        return db.delete(SMS_DETAILS_TABLE_NAME, SMS_DETAILS_COLUMN_ID + "=", new String[]{Integer.toString(id)});
     }
 
     public Cursor getDataById(int id) {
         this.close();
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT *" +
+        db = getDatabase(false);
+        return db.rawQuery("SELECT *" +
                 " FROM " + SMS_DETAILS_TABLE_NAME +
                 " WHERE " + SMS_DETAILS_COLUMN_ID + "=" + id, null);
-        return cursor;
     }
 
     public Cursor getDataBy(String columnName, String value) {
         this.close();
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT *" +
+        db = getDatabase(false);
+        return db.rawQuery("SELECT *" +
                 " FROM " + SMS_DETAILS_TABLE_NAME +
                 " WHERE " + columnName + "='" + value + "'", null);
-        return cursor;
     }
 
     public int getNumberOfRows() {
         this.close();
-        SQLiteDatabase db = this.getReadableDatabase();
-        int numRows = (int) DatabaseUtils.queryNumEntries(db, SMS_DETAILS_TABLE_NAME);
-        return numRows;
+        db = getDatabase(false);
+        return (int) DatabaseUtils.queryNumEntries(db, SMS_DETAILS_TABLE_NAME);
     }
 
 }

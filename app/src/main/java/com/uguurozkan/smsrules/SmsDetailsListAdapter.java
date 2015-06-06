@@ -14,9 +14,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-/**
- * Created by Uğur Özkan on 6/4/2015.
- */
 public class SmsDetailsListAdapter extends BaseAdapter {
 
     private Context context;
@@ -58,6 +55,10 @@ public class SmsDetailsListAdapter extends BaseAdapter {
 
         textViewContactNumber.setText(sender);
         textViewSMSBody.setText(body);
+
+        if (cursor.isLast()) {
+            cursor.close();
+        }
 
         return convertView;
     }
