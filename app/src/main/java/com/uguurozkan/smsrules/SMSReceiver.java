@@ -62,6 +62,9 @@ public class SMSReceiver extends BroadcastReceiver {
                 }
             } while (cursorAll.moveToNext());
         } else {
+            if (!rulesDB.getRuleGroups().contains("Uncategorized")) {
+                rulesDB.insertEntry("Uncategorized", null, null, null);
+            }
             detailsDB.insertEntry("Uncategorized", address, messageBody, c.get(Calendar.SECOND) + "", false + "");
         }
     }
@@ -72,7 +75,6 @@ public class SMSReceiver extends BroadcastReceiver {
         }
 
         if (reply != null && !reply.equals("")) {
-            Log.d("SMSM", "SMSReceiver filter");
             try {
                 SmsManager sms = SmsManager.getDefault();
                 sms.sendTextMessage(address, null, reply, null, null);
@@ -91,36 +93,13 @@ public class SMSReceiver extends BroadcastReceiver {
         ctxt.getContentResolver().insert(Uri.parse("content://sms/sent"), values);
     }
 
-    private String getSenderName(Context context, Bundle intentExtras) {
-        String contactNum = getSenderNum(intentExtras);
-        String contact = contactNum; // just to be sure
-
-        Uri lookupURI = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.decode(contactNum));
-        Cursor cursor = context.getContentResolver().query(lookupURI, new String[]{ContactsContract.Data.DISPLAY_NAME}, null, null, null);
-
-        try {
-            cursor.moveToFirst();
-            contact = cursor.getString(0);
-        } catch (Exception e) {
-            contact = contactNum;
-        } finally {
-            cursor.close();
-        }
-
-        return contact;
-    }
-
     private String getSenderNum(Bundle intentExtras) {
         if (intentExtras == null)
             return null;
 
-        String number = "";
         final Object[] pdus = (Object[]) intentExtras.get("pdus");
-        for (int i = 0; i < pdus.length; i++) {
-            SmsMessage currentMessage = SmsMessage.createFromPdu((byte[]) pdus[i]);
-            number += currentMessage.getDisplayOriginatingAddress();
-        }
-        return number;
+        SmsMessage currentMessage = SmsMessage.createFromPdu((byte[]) pdus[0]);
+        return currentMessage.getDisplayOriginatingAddress();
     }
 
     private String getMessageBody(Bundle intentExtras) {

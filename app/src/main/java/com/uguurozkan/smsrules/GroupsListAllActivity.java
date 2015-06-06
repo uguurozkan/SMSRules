@@ -7,17 +7,13 @@
 package com.uguurozkan.smsrules;
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -110,8 +106,9 @@ public class GroupsListAllActivity extends ActionBarActivity implements AdapterV
             startActivity(groupAddIntent);
             return true;
         } else if (id == R.id.action_Delay) {
-            Intent delayService = new Intent(this, SMSDigestService.class);
-            startService(delayService);
+            Intent digestService = new Intent(this, SmsDigestService.class);
+            startService(digestService);
+            finish();
             return true;
         }
 

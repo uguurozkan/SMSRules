@@ -1,11 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2015.
   ~ This code belongs to Uğur Özkan
   ~ ugur.ozkan@ozu.edu.tr
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.uguurozkan.smsrules" >
+    package="com.uguurozkan.smsrules">
 
     <uses-sdk android:minSdkVersion="10" />
 
@@ -22,10 +21,10 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name=".GroupsListAllActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -33,30 +32,40 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".SMSReceiver" >
-            <intent-filter android:priority="999" >
-                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
-            </intent-filter>
-        </receiver>
-
         <activity
             android:name=".SmsDetailsListAllActivity"
             android:label="@string/title_activity_list_all_sms"
-            android:parentActivityName=".GroupsListAllActivity" >
+            android:parentActivityName=".GroupsListAllActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".GroupsListAllActivity" />
         </activity>
+
         <activity
             android:name=".GroupsAddActivity"
             android:label="@string/title_activity_groups_add"
-            android:parentActivityName=".GroupsListAllActivity" >
+            android:parentActivityName=".GroupsListAllActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.uguurozkan.smsrules.GroupsListAllActivity" />
         </activity>
 
-        <service android:name=".SMSDigestService" />
+        <service android:name=".SmsDigestService" />
+
+        <receiver android:name=".SMSReceiver">
+            <intent-filter android:priority="999">
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".SmsDigestReceiver"
+            android:enabled="true"
+            android:exported="true">
+
+        </receiver>
+
+
     </application>
 
 </manifest>

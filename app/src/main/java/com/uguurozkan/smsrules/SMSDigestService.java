@@ -6,60 +6,38 @@
 
 package com.uguurozkan.smsrules;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 
-import java.util.Date;
-
-public class SMSDigestService extends Service {
-
-    Date when = new Date(System.currentTimeMillis());
+public class SmsDigestService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        startMainActivity();
-
+        startPendingActivity();
         return super.onStartCommand(intent, flags, startId);
     }
 
-    private void startMainActivity() {
+    private void startPendingActivity() {
         try {
-            Intent someIntent = new Intent(this, GroupsListAllActivity.class);
+            long interval = 12 * 60 * 1000; // n seconds
 
-            // note this could be getActivity if you want to launch an activity
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                    getApplicationContext(),
-                    0,
-                    someIntent,
-                    PendingIntent.FLAG_CANCEL_CURRENT);
-
-            AlarmManager alarms = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-
-            alarms.setRepeating(AlarmManager.RTC_WAKEUP,
-                    when.getTime(),
-                    AlarmManager.INTERVAL_HALF_DAY,
-                    pendingIntent);
+            Intent intent = new Intent(this.getApplicationContext(), SmsDigestReceiver.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), 1253, intent, PendingIntent.FLAG_UPDATE_CURRENT |  Intent.FILL_IN_DATA);
+            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + interval, pendingIntent );
 
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            stopSelf();
         }
-
-        //stopSelf();
-    }
-
-
-    public SMSDigestService() {
-
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
+        return null;
     }
 }

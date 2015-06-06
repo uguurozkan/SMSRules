@@ -12,4 +12,7 @@
     <string name="action_Delay">Delay 12 Hours</string>
     <string name="title_activity_list_all_sms">SMS Details</string>
     <string name="title_activity_groups_add">Filter Add Page</string>
+    <string name="title_activity_groups_delay">Delay Page</string>
+    <string name="title_activity_sms_digest">SmsDigestActivity</string>
+    <string name="action_settings">Settings</string>
 </resources>
