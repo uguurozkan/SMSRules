@@ -62,6 +62,7 @@ public class SmsDetailsDBHelper extends SQLiteOpenHelper {
     }
 
     public boolean insertEntry(String group, String sender, String smsBody, String date, String status) {
+        this.close();
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = populateContentValues(group, sender, smsBody, date, status);
         db.insert(SMS_DETAILS_TABLE_NAME, null, contentValues);
@@ -69,6 +70,7 @@ public class SmsDetailsDBHelper extends SQLiteOpenHelper {
     }
 
     public boolean updateEntry(Integer id, String group, String sender, String smsBody, String date, String status) {
+        this.close();
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = populateContentValues(group, sender, smsBody, date, status);
         db.update(SMS_DETAILS_TABLE_NAME, contentValues, SMS_DETAILS_COLUMN_ID + "=", new String[]{Integer.toString(id)});
@@ -86,12 +88,14 @@ public class SmsDetailsDBHelper extends SQLiteOpenHelper {
     }
 
     public Integer deleteEntry(Integer id) {
+        this.close();
         SQLiteDatabase db = this.getWritableDatabase();
         Integer res = db.delete(SMS_DETAILS_TABLE_NAME, SMS_DETAILS_COLUMN_ID + "=", new String[]{Integer.toString(id)});
         return res;
     }
 
     public Cursor getDataById(int id) {
+        this.close();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT *" +
                 " FROM " + SMS_DETAILS_TABLE_NAME +
@@ -100,6 +104,7 @@ public class SmsDetailsDBHelper extends SQLiteOpenHelper {
     }
 
     public Cursor getDataBy(String columnName, String value) {
+        this.close();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT *" +
                 " FROM " + SMS_DETAILS_TABLE_NAME +
@@ -108,16 +113,10 @@ public class SmsDetailsDBHelper extends SQLiteOpenHelper {
     }
 
     public int getNumberOfRows() {
+        this.close();
         SQLiteDatabase db = this.getReadableDatabase();
         int numRows = (int) DatabaseUtils.queryNumEntries(db, SMS_DETAILS_TABLE_NAME);
         return numRows;
-    }
-
-    public void closeDb() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        if (db.isOpen()) {
-            db.close();
-        }
     }
 
 }
