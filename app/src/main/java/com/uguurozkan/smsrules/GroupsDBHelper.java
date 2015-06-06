@@ -137,8 +137,8 @@ public class GroupsDBHelper extends SQLiteOpenHelper {
 
     public Cursor getColumn(String columnName) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT DISTINCT " + SMS_RULES_COLUMN_VALUE +
-                " FROM " + columnName, null);
+        Cursor cursor = db.rawQuery("SELECT DISTINCT " + columnName +
+                " FROM " + SMS_RULES_TABLE_NAME, null);
         return cursor;
     }
 }
