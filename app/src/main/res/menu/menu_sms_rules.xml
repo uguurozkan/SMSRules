@@ -9,4 +9,6 @@
     xmlns:tools="http://schemas.android.com/tools" tools:context=".GroupsListAllActivity">
     <item android:id="@+id/action_Add" android:title="@string/action_Add"
         android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/action_Delay" android:title="@string/action_Delay"
+        android:orderInCategory="100" app:showAsAction="never" />
 </menu>

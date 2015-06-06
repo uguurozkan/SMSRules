@@ -41,7 +41,6 @@ public class GroupsDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Log.d("MSMSM", "GorupDBOncreate");
         db.execSQL("CREATE TABLE IF NOT EXISTS "
                         + SMS_RULES_TABLE_NAME      + " ( "
                         + SMS_RULES_COLUMN_ID       + " INTEGER PRIMARY KEY, "
@@ -138,6 +137,13 @@ public class GroupsDBHelper extends SQLiteOpenHelper {
     public Cursor getColumn(String columnName) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT DISTINCT " + columnName +
+                " FROM " + SMS_RULES_TABLE_NAME, null);
+        return cursor;
+    }
+
+    public Cursor getAll() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT DISTINCT * " +
                 " FROM " + SMS_RULES_TABLE_NAME, null);
         return cursor;
     }

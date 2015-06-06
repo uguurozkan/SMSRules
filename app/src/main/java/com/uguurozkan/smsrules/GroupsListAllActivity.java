@@ -127,6 +127,10 @@ public class GroupsListAllActivity extends ActionBarActivity implements AdapterV
             Intent groupAddIntent = new Intent(this, GroupsAddActivity.class);
             startActivity(groupAddIntent);
             return true;
+        } else if (id == R.id.action_Delay) {
+            Intent delayService = new Intent(this, SMSDigestService.class);
+            startService(delayService);
+            return true;
         }
 
         return super.onOptionsItemSelected(item);

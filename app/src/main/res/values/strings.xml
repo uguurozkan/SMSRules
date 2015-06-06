@@ -9,6 +9,7 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_Add">Add Filter</string>
+    <string name="action_Delay">Delay 12 Hours</string>
     <string name="title_activity_list_all_sms">SMS Details</string>
     <string name="title_activity_groups_add">Filter Add Page</string>
 </resources>

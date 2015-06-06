@@ -38,7 +38,6 @@ public class SmsDetailsDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Log.d("MSMSM", "SMSMDeteeaill");
         db.execSQL("CREATE TABLE IF NOT EXISTS "
                         + SMS_DETAILS_TABLE_NAME + " ("
                         + SMS_DETAILS_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "

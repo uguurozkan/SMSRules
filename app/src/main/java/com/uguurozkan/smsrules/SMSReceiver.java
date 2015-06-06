@@ -7,12 +7,14 @@
 package com.uguurozkan.smsrules;
 
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 
 import java.util.Calendar;
@@ -22,41 +24,69 @@ import java.util.Calendar;
  */
 public class SMSReceiver extends BroadcastReceiver {
 
-    GroupsDBHelper rulesDB;
-    SmsDetailsDBHelper detailsDB;
-    Calendar c = Calendar.getInstance();
+    private GroupsDBHelper rulesDB;
+    private SmsDetailsDBHelper detailsDB;
+    private Context context;
+    private Calendar c = Calendar.getInstance();
+
 
     @Override
     public void onReceive(Context context, Intent intent) {
         String address = getSenderName(context, intent.getExtras());
         String messageBody = getMessageBody(intent.getExtras());
 
+        this.context = context;
         rulesDB = new GroupsDBHelper(context);
         detailsDB = new SmsDetailsDBHelper(context);
-        filter(address, messageBody);
+        filterSms(address, messageBody);
         //abortBroadcast();
     }
 
-    private void filter(String address, String messageBody) {
-        Cursor cursorFrom = rulesDB.getDataBy(GroupsDBHelper.SMS_RULES_COLUMN_FROM, address);
-        Cursor cursorValues = rulesDB.getColumn(GroupsDBHelper.SMS_RULES_COLUMN_VALUE);
+    private void filterSms(String address, String messageBody) {
+        Cursor cursorAll = rulesDB.getAll();
 
-        if (cursorFrom != null && cursorFrom.moveToFirst()) {
+        if (cursorAll != null && cursorAll.moveToFirst()) {
             do {
-                String group = cursorFrom.getString(cursorFrom.getColumnIndex(GroupsDBHelper.SMS_RULES_COLUMN_GROUP));
-                detailsDB.insertEntry(group, address, messageBody, c.get(Calendar.SECOND) + "", false + "");
-            } while (cursorFrom.moveToNext());
-        } else if (cursorValues != null && cursorValues.moveToFirst()) {
-            do {
-                String value = cursorValues.getString(cursorValues.getColumnIndex(GroupsDBHelper.SMS_RULES_COLUMN_VALUE));
-                String group = cursorFrom.getString(cursorFrom.getColumnIndex(GroupsDBHelper.SMS_RULES_COLUMN_GROUP));
-                if (messageBody.contains(value)) {
-                    detailsDB.insertEntry(group, address, messageBody, c.get(Calendar.SECOND) + "", false + "");
+                String group = cursorAll.getString(cursorAll.getColumnIndex(GroupsDBHelper.SMS_RULES_COLUMN_GROUP));
+                String value = cursorAll.getString(cursorAll.getColumnIndex(GroupsDBHelper.SMS_RULES_COLUMN_VALUE));
+                String from = cursorAll.getString(cursorAll.getColumnIndex(GroupsDBHelper.SMS_RULES_COLUMN_FROM));
+                String reply = cursorAll.getString(cursorAll.getColumnIndex(GroupsDBHelper.SMS_RULES_COLUMN_REPLY));
+
+                if (address.equals(from) && messageBody.contains(value)) {
+                    filter(address, messageBody, group, reply);
+                } else if(address.equals(from)) {
+                    filter(address, messageBody, group, reply);
+                } else if (messageBody.contains(value)) {
+                    filter(address, messageBody, group, reply);
                 }
-            } while(cursorValues.moveToNext());
+            } while (cursorAll.moveToNext());
         } else {
             detailsDB.insertEntry("Uncategorized", address, messageBody, c.get(Calendar.SECOND) + "", false + "");
         }
+    }
+
+    private void filter(String address, String messageBody, String group, String reply) {
+        if (group != null) {
+            detailsDB.insertEntry(group, address, messageBody, c.get(Calendar.SECOND) + "", false + "");
+        }
+
+        if (reply != null) {
+            sendMessage(address, reply);
+        }
+    }
+
+    private void sendMessage(String address, String reply) {
+        SmsManager sms = SmsManager.getDefault();
+        sms.sendTextMessage(address, null, reply, null, null);
+
+        showMessageInHistory(address, reply);
+    }
+
+    private void showMessageInHistory(String address, String message) {
+        ContentValues values = new ContentValues();
+        values.put("address", address);
+        values.put("body", message);
+        context.getContentResolver().insert(Uri.parse("content://sms/sent"), values);
     }
 
     private String getSenderName(Context context, Bundle intentExtras) {
