@@ -68,12 +68,7 @@ public class SmsDetailsListAllActivity extends Activity implements AdapterView.O
                 return;
             }
         });
+
         smsDetails.show();
-
-        markAsRead();
-    }
-
-    private void markAsRead() {
-
     }
 }

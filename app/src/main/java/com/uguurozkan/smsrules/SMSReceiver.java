@@ -6,15 +6,15 @@
 
 package com.uguurozkan.smsrules;
 
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.util.Log;
@@ -40,7 +40,8 @@ public class SMSReceiver extends BroadcastReceiver {
         rulesDB = new GroupsDBHelper(context);
         detailsDB = new SmsDetailsDBHelper(context);
         filterSms(address, messageBody);
-        //abortBroadcast();
+        playNotificationSound();
+        abortBroadcast();
     }
 
     private void filterSms(String address, String messageBody) {
@@ -67,6 +68,8 @@ public class SMSReceiver extends BroadcastReceiver {
             }
             detailsDB.insertEntry("Uncategorized", address, messageBody, c.get(Calendar.SECOND) + "", false + "");
         }
+
+        cursorAll.close();
     }
 
     private void filter(String address, String messageBody, String group, String reply) {
@@ -91,6 +94,16 @@ public class SMSReceiver extends BroadcastReceiver {
         values.put("address", address);
         values.put("body", message);
         ctxt.getContentResolver().insert(Uri.parse("content://sms/sent"), values);
+    }
+
+    private void playNotificationSound() {
+        try {
+            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            Ringtone r = RingtoneManager.getRingtone(ctxt, notification);
+            r.play();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private String getSenderNum(Bundle intentExtras) {
