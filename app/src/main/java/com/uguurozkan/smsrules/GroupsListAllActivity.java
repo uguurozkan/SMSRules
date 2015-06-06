@@ -34,17 +34,13 @@ public class GroupsListAllActivity extends ActionBarActivity implements AdapterV
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_all_groups);
 
+        initDBs();
+        initView();
+    }
+
+    private void initDBs() {
         rulesDB = getGroupsDB();
         detailsDB = getSmsDetailsDB();
-
-
-        //populateSMSRulesDB();
-        //populateSMSDetailsDB();
-
-        groupsListAdapter = new GroupsListAdapter(this, rulesDB.getRuleGroupsCursor());
-        listViewGroups = (ListView) findViewById(R.id.listViewGroups);
-        listViewGroups.setAdapter(groupsListAdapter);
-        listViewGroups.setOnItemClickListener(this);
     }
 
     private GroupsDBHelper getGroupsDB() {
@@ -61,31 +57,11 @@ public class GroupsListAllActivity extends ActionBarActivity implements AdapterV
         return detailsDB;
     }
 
-    private void populateSMSRulesDB() {
-        rulesDB.insertEntry("SPAM", "indirim", null, null);
-        rulesDB.insertEntry("SPAM", "kredi", null, null);
-        rulesDB.insertEntry("BANK", null, "AKBANK", null);
-        rulesDB.insertEntry("Uncategorized", null, null, null);
-        rulesDB.insertEntry("TEST", "What!?", "Uğur Özkan", "Hmm.");
-        rulesDB.insertEntry(null, "Thx.", "Uğur Özkan", "yw");
-        rulesDB.insertEntry("TEST", null, "Uğur Özkan", null);
-    }
-
-    private void populateSMSDetailsDB() {
-        Cursor cursor = getContentResolver().query(Uri.parse("content://sms/inbox"), null, null, null, null);
-
-        int i = 0;
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                String sender = cursor.getString(cursor.getColumnIndex(SmsDetailsDBHelper.SMS_DETAILS_COLUMN_ADDRESS)).toString();
-                String body = cursor.getString(cursor.getColumnIndex(SmsDetailsDBHelper.SMS_DETAILS_COLUMN_BODY)).toString();
-                String date = cursor.getString(cursor.getColumnIndex(SmsDetailsDBHelper.SMS_DETAILS_COLUMN_DATE)).toString();
-                String status = cursor.getString(cursor.getColumnIndex(SmsDetailsDBHelper.SMS_DETAILS_COLUMN_READ)).toString();
-                detailsDB.insertEntry("Uncategorized", sender, body, date, status);
-                i++;
-            }
-            while (cursor.moveToNext() && i<40);
-        }
+    private void initView() {
+        groupsListAdapter = new GroupsListAdapter(this, rulesDB.getRuleGroupsCursor());
+        listViewGroups = (ListView) findViewById(R.id.listViewGroups);
+        listViewGroups.setAdapter(groupsListAdapter);
+        listViewGroups.setOnItemClickListener(this);
     }
 
     @Override
@@ -96,9 +72,15 @@ public class GroupsListAllActivity extends ActionBarActivity implements AdapterV
     @Override
     protected void onResume() {
         super.onResume();
+        initView();
         groupsListAdapter.notifyDataSetChanged();
         listViewGroups.invalidateViews();
         listViewGroups.refreshDrawableState();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
     }
 
     @Override

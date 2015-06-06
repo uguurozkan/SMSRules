@@ -58,4 +58,5 @@ public class GroupsListAdapter extends BaseAdapter {
 
         return convertView;
     }
+
 }
