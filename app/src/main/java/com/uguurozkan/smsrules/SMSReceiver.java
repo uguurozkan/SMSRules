@@ -60,7 +60,7 @@ public class SMSReceiver extends BroadcastReceiver {
                     filtered = filter(address, messageBody, group, reply);
                 } else if(address.equals(from) && value.equals("")) {
                     filtered = filter(address, messageBody, group, reply);
-                } else if (messageBody.contains(value) && !value.equals("") && address.equals("")) {
+                } else if (messageBody.contains(value) && !value.equals("") && from.equals("")) {
                     filtered = filter(address, messageBody, group, reply);
                 }
             } while (cursorAll.moveToNext());

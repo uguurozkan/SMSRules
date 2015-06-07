@@ -50,7 +50,7 @@
                 android:value="com.uguurozkan.smsrules.GroupsListAllActivity" />
         </activity>
 
-        <service android:name=".SmsDigestService" />
+        <service android:name=".DigestService" />
 
         <receiver android:name=".SMSReceiver">
             <intent-filter android:priority="999">
@@ -58,7 +58,7 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".SmsDigestReceiver" />
+        <receiver android:name=".DigestReceiver" />
 
     </application>
 

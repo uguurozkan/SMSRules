@@ -106,7 +106,7 @@ public class GroupsListAllActivity extends ActionBarActivity implements AdapterV
             startActivity(groupAddIntent);
             return true;
         } else if (id == R.id.action_Delay) {
-            Intent digestService = new Intent(this, SmsDigestService.class);
+            Intent digestService = new Intent(this, DigestService.class);
             startService(digestService);
 
             finish();

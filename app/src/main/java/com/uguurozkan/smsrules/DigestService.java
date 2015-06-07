@@ -11,7 +11,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
-public class SmsDigestService extends Service {
+public class DigestService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -21,9 +21,9 @@ public class SmsDigestService extends Service {
 
     private void startPendingActivity() {
         try {
-            long interval = 12 * 60 * 1000; // n seconds
+            long interval = 2 * 60 * 1000; // n seconds
 
-            Intent intent = new Intent(this.getApplicationContext(), SmsDigestReceiver.class);
+            Intent intent = new Intent(this.getApplicationContext(), DigestReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), 1253, intent, PendingIntent.FLAG_UPDATE_CURRENT |  Intent.FILL_IN_DATA);
             AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
             alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + interval, pendingIntent);
